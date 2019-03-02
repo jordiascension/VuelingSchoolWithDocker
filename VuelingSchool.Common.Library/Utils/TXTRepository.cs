@@ -84,7 +84,8 @@ namespace VuelingSchool.Common.Library.Utils
 			List<Student> students;
 			try
 			{
-				students = new List<Student>();
+                FileExists(localPath);
+                students = new List<Student>();
 				string line = string.Empty;
 				using (StreamReader sr = new StreamReader(localPath))
 				{
@@ -244,5 +245,41 @@ namespace VuelingSchool.Common.Library.Utils
 		{
 			return string.Concat(student.StudentGuid.ToString(), ", ", student.StudentId, ", ", student.Name, ", ", student.Surname, ", ", student.Birthday);
 		}
-	}
+
+        public static void FileExists(string path)
+        {
+            bool fileExists = File.Exists(path);
+            if (!fileExists)
+            {
+                CreateFile(path);
+            }
+        }
+        public static void CreateFile(string path)
+        {
+            try
+            {
+                File.Create(path).Close();
+            }
+            catch (IOException e)
+            {
+                log.Warn(e.Message);
+                throw;
+            }
+            catch (ArgumentException e)
+            {
+                log.Warn(e.Message);
+                throw;
+            }
+            catch (NotSupportedException e)
+            {
+                log.Warn(e.Message);
+                throw;
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                log.Warn(e.Message);
+                throw;
+            }
+        }
+    }
 }

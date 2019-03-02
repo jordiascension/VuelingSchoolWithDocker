@@ -31,13 +31,15 @@ namespace VuelingSchool.Presentation.Console
 				{
 					if (p.Name != "StudentGuid")
 					{
-						System.Console.WriteLine("Plese enter the {0}:", p.Name);
+						System.Console.WriteLine("Please enter the {0}:", p.Name);
 						var myVal = System.Console.ReadLine();
 						p.SetValue(student, myVal);
 					}
 				}
 				var students = fileRepository.GetAll();
 				exist = (students == null ? null : students.Find(s => s.StudentId == student.StudentId));
+                if (exist!=null)
+                    Console.WriteLine("This id is already used!Please Try Again");
 			} while (exist != null);
 			student.StudentGuid = student.GenerateGuid();
 			

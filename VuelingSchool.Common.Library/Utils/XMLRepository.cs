@@ -13,10 +13,24 @@ using System.Xml.Serialization;
 
 namespace VuelingSchool.Common.Library.Utils
 {
-	public class XMLRepository : AbstractFileManager
-	{
-		public static string localPath = ConfigurationSettings.AppSettings["localPath"] + "xml";
+    public class XMLRepository : AbstractFileManager
+    {
+        public static string localPath = ConfigurationSettings.AppSettings["localPath"] + "xml";
 
+        /*static XMLRepository()
+        {
+            GenerateXmlFile();
+        }*/
+
+        public XMLRepository() {
+
+            bool fileExists = File.Exists(localPath);
+            if (!fileExists)
+            {
+                GenerateXmlFile();
+            }
+            
+        }
 
 		public override Student Add(Student student)
 		{
@@ -33,7 +47,7 @@ namespace VuelingSchool.Common.Library.Utils
 				serializer.Serialize(stream, studentList);
 			}
 
-			return GetById(student.StudentId);
+			return student;
 		}
 
 		public override Student GetById(string id)
@@ -56,8 +70,11 @@ namespace VuelingSchool.Common.Library.Utils
 			{
 
 				XmlSerializer serializer = new XmlSerializer(typeof(List<Student>));
-
-				studentsList = (List<Student>)serializer.Deserialize(stream);
+                XmlReader tmp = XmlReader.Create(stream);
+                bool result = serializer.CanDeserialize(tmp);
+                stream.Seek(0, SeekOrigin.Begin);
+                if (result)
+                    studentsList = (List<Student>)serializer.Deserialize(stream);
 			}
 			return studentsList;
 
@@ -101,17 +118,18 @@ namespace VuelingSchool.Common.Library.Utils
 			FileStreamObj.Close();
 
 			var doc = new XmlDocument();
-			XmlElement xmlElement = doc.CreateElement("Students");
-			doc.Save(localPath);
+			XmlNode docNode = doc.CreateElement("Students");
+            doc.AppendChild(docNode);
+            doc.Save(localPath);
 
-			Student	s = new Student();
+			/*Student	s = new Student();
 			XmlSerializer writer =
 				new XmlSerializer(typeof(Student));
 
 			FileStream file = System.IO.File.Create(localPath);
 
 			writer.Serialize(file, s);
-			file.Close();
+			file.Close();*/
 
 		}
 
